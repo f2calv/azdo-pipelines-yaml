@@ -1,0 +1,26 @@
+version: '3'
+services:
+  myapp:
+    build:
+       context: .
+       dockerfile: MyApp/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  myweb:
+    build:
+       context: .
+       dockerfile: MyWeb/Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  
+  mywebapi:
+    build:
+       context: .
+       dockerfile: MyWebAPI/Dockerfile
+    ports:
+      - "8081:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

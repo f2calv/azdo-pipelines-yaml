@@ -1,0 +1,12 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Author>Alex Vincent</Author>
+    <Email>alexv@microsoft.com</Email>
+  </PropertyGroup>
+
+</Project>

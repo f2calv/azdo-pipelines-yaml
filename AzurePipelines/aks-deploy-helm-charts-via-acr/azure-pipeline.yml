@@ -1,0 +1,73 @@
+# Docker images, Helm charts, Azure Container Registry and Azure Kubernetes Service.
+# This is an Azure DevOps pipeline 100% written in YAML. It is designed to be stored directly in your repository.
+# This pipeline uses the strategy/matrix keyword to run multiple parallel pipeline processes, which;
+# 1) build docker images
+# 2) push docker images to ACR
+# 3) package Helm charts (*feature still in preview*)
+# 4) push Helm packages to ACR (*feature still in preview*)
+# 5) publish image+helm chart to Azure Kubernetes Service (AKS).
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+#**************************************************
+#**** substitute below variables with your own ****
+#**************************************************
+variables:
+  Azure.ServiceConnectionId: myServiceConnectionId
+  Azure.ResourceGroupName: myResourceGroupName
+  ACR.Name: myACRName
+  AKS.ClusterName: myAKSClusterName
+  #only change the below if your ACR is non-Azure
+  ACR.FullName: $(ACR.Name).azurecr.io
+  ACR.Deploy: false
+
+stages:
+- stage: Build
+  displayName: 'Build & push Docker images and Helm charts to ACR'
+  jobs:
+  - job: Build
+    displayName: 'Build job'
+    strategy:
+      matrix:
+        MyApp:
+          imageRepository: myapp
+          imageRepositoryExact: MyApp
+        MyWeb:
+          imageRepository: myweb
+          imageRepositoryExact: MyWeb
+        MyWebAPI:
+          imageRepository: mywebapi
+          imageRepositoryExact: MyWebAPI
+        #add additional builds in here...
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - template: steps.build-and-push.docker-images.yml
+    - template: steps.build-and-push.helm-charts.yml
+        
+- stage: Deploy
+  displayName: 'Deploy stage'
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy to AKS via Helm Charts stored in ACR'
+    strategy:
+      matrix:
+        MyApp:
+          imageRepository: myapp
+          imageRepositoryExact: MyApp
+        MyWeb:
+          imageRepository: myweb
+          imageRepositoryExact: MyWeb
+        MyWebAPI:
+          imageRepository: mywebapi
+          imageRepositoryExact: MyWebAPI
+        #add additional deployments in here...
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - template: steps.deploy.helm-charts.yml    

@@ -1,0 +1,33 @@
+steps:
+
+- task: HelmInstaller@0
+  displayName: 'Install Helm 2.11.0'
+  inputs:
+    helmVersion: 2.11.0
+
+- task: HelmDeploy@0
+  displayName: 'helm init'
+  inputs:
+    azureSubscription: $(Azure.ServiceConnectionId)
+    azureResourceGroup: $(Azure.ResourceGroupName)
+    kubernetesCluster: $(AKS.ClusterName)
+    command: init
+    arguments: '--client-only'
+
+- task: HelmDeploy@0
+  displayName: 'helm package'
+  inputs:
+    azureSubscription: $(Azure.ServiceConnectionId)
+    azureResourceGroup: $(Azure.ResourceGroupName)
+    kubernetesCluster: $(AKS.ClusterName)
+    command: package
+    chartPath: $(imageRepositoryExact)/charts/$(imageRepository)
+    chartVersion: $(Build.BuildId)
+    destination: $(Build.ArtifactStagingDirectory)
+
+- task: AzureCLI@1
+  displayName: 'Push helm chart'
+  inputs:
+    azureSubscription: $(Azure.ServiceConnectionId)
+    scriptLocation: inlineScript
+    inlineScript: 'az acr helm push -n $(ACR.Name) $(Build.ArtifactStagingDirectory)/$(imageRepository)-$(Build.BuildId).tgz'
