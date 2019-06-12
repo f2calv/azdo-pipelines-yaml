@@ -21,9 +21,9 @@ variables:
   Azure.ResourceGroupName: myResourceGroupName
   ACR.Name: myACRName
   AKS.ClusterName: myAKSClusterName
-  #only change the below if your ACR is non-Azure
-  ACR.FullName: $(ACR.Name).azurecr.io
-  ACR.Deploy: false
+  AKS.Deploy: false                     #on/off switch
+  ACR.FullName: $(ACR.Name).azurecr.io  #only change ACR.FullName if your ACR is non-Azure
+  ACR.Deploy: false                     #on/off switch
 
 stages:
 - stage: Build
@@ -55,6 +55,7 @@ stages:
   jobs:
   - job: Deploy
     displayName: 'Deploy to AKS via Helm Charts stored in ACR'
+    condition: and(succeeded(), eq(variables['AKS.Deploy'], 'true'))
     strategy:
       matrix:
         MyApp:

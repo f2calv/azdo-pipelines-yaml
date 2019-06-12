@@ -7,6 +7,7 @@ steps:
 
 - task: HelmDeploy@0
   displayName: 'helm init'
+  condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     azureResourceGroup: $(Azure.ResourceGroupName)
@@ -16,6 +17,7 @@ steps:
 
 - task: HelmDeploy@0
   displayName: 'helm package'
+  condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     azureResourceGroup: $(Azure.ResourceGroupName)
@@ -27,6 +29,7 @@ steps:
 
 - task: AzureCLI@1
   displayName: 'Push helm chart'
+  condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     scriptLocation: inlineScript

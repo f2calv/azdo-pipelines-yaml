@@ -16,6 +16,7 @@ steps:
 
 - task: Docker@1
   displayName: 'Push image $(imageRepository):$(Build.BuildNumber)'
+  condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscriptionEndpoint: $(Azure.ServiceConnectionId)
     azureContainerRegistry: $(ACR.FullName)
