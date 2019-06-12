@@ -70,4 +70,5 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-      - template: steps.deploy.helm-charts.yml    
+    - script: 'echo $(imageRepository) deployment disabled'
+    #- template: steps.deploy.helm-charts.yml    
