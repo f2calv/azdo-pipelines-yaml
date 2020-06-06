@@ -30,7 +30,7 @@ stages:
   displayName: 'Build & push Docker images and Helm charts to ACR'
   jobs:
   - job: Build
-    displayName: 'Build job'
+    displayName: Build job
     strategy:
       matrix:
         MyApp:
@@ -50,11 +50,11 @@ stages:
     - template: steps.build-and-push.helm-charts.yml
         
 - stage: Deploy
-  displayName: 'Deploy stage'
+  displayName: Deploy stage
   dependsOn: Build
   jobs:
   - job: Deploy
-    displayName: 'Deploy to AKS via Helm Charts stored in ACR'
+    displayName: Deploy to AKS via Helm Charts stored in ACR
     condition: and(succeeded(), eq(variables['AKS.Deploy'], 'true'))
     strategy:
       matrix:
@@ -71,5 +71,5 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-    - script: 'echo $(imageRepository) deployment disabled'
+    - script: echo $(imageRepository) deployment disabled
     #- template: steps.deploy.helm-charts.yml    

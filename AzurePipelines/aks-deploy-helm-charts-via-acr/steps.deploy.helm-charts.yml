@@ -6,29 +6,29 @@ steps:
     helmVersion: 2.11.0
 
 - task: HelmDeploy@0
-  displayName: 'helm init'
+  displayName: helm init
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     azureResourceGroup: $(Azure.ResourceGroupName)
     kubernetesCluster: $(AKS.ClusterName)
     command: init
-    arguments: '--upgrade --canary-image'
+    arguments: --upgrade --canary-image
 
 - task: AzureCLI@1
-  displayName: 'az acr helm repo add -n $(ACR.Name)'
+  displayName: az acr helm repo add -n $(ACR.Name)
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     scriptLocation: inlineScript
-    inlineScript: 'az acr helm repo add -n $(ACR.Name) --verbose'
+    inlineScript: az acr helm repo add -n $(ACR.Name) --verbose
 
 - task: HelmDeploy@0
-  displayName: 'helm upgrade $(ACR.Name)/$(imageRepository) --install --force --version $(Build.BuildId) --set image.tag=$(Build.BuildNumber)'
+  displayName: helm upgrade $(ACR.Name)/$(imageRepository) --install --force --version $(Build.BuildId) --set image.tag=$(Build.BuildNumber)
   inputs:
-    connectionType: 'Azure Resource Manager'
+    connectionType: Azure Resource Manager
     azureSubscription: AzRMSvcConnection
-    azureResourceGroup: '$(Azure.ResourceGroupName)'
-    kubernetesCluster: '$(AKS.ClusterName)'
+    azureResourceGroup: $(Azure.ResourceGroupName)
+    kubernetesCluster: $(AKS.ClusterName)
     command: upgrade
-    chartName: '$(ACR.Name)/$(imageRepository)' 
+    chartName: $(ACR.Name)/$(imageRepository) 
     releaseName: $(imageRepository)
-    arguments: '--install --force --version $(Build.BuildId) --set image.tag=$(Build.BuildNumber)'
+    arguments: --install --force --version $(Build.BuildId) --set image.tag=$(Build.BuildNumber)

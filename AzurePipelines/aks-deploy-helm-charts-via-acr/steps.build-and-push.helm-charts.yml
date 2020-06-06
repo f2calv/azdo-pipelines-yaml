@@ -1,22 +1,22 @@
 steps:
 
 - task: HelmInstaller@0
-  displayName: 'Install Helm 2.11.0'
+  displayName: Install Helm 2.11.0
   inputs:
     helmVersion: 2.11.0
 
 - task: HelmDeploy@0
-  displayName: 'helm init'
+  displayName: helm init
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     azureResourceGroup: $(Azure.ResourceGroupName)
     kubernetesCluster: $(AKS.ClusterName)
     command: init
-    arguments: '--client-only'
+    arguments: --client-only
 
 - task: HelmDeploy@0
-  displayName: 'helm package'
+  displayName: helm package
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
@@ -28,9 +28,9 @@ steps:
     destination: $(Build.ArtifactStagingDirectory)
 
 - task: AzureCLI@1
-  displayName: 'Push helm chart'
+  displayName: Push helm chart
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
     azureSubscription: $(Azure.ServiceConnectionId)
     scriptLocation: inlineScript
-    inlineScript: 'az acr helm push -n $(ACR.Name) $(Build.ArtifactStagingDirectory)/$(imageRepository)-$(Build.BuildId).tgz'
+    inlineScript: az acr helm push -n $(ACR.Name) $(Build.ArtifactStagingDirectory)/$(imageRepository)-$(Build.BuildId).tgz
