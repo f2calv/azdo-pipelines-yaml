@@ -46,8 +46,8 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-    - template: steps.build-and-push.docker-images.yml
-    - template: steps.build-and-push.helm-charts.yml
+    - template: steps-build-and-push-docker-images.yml
+    - template: steps-build-and-push-helm-charts.yml
         
 - stage: Deploy
   displayName: Deploy stage
@@ -72,4 +72,4 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - script: echo $(imageRepository) deployment disabled
-    #- template: steps.deploy.helm-charts.yml    
+    #- template: steps-deploy-helm-charts.yml    
