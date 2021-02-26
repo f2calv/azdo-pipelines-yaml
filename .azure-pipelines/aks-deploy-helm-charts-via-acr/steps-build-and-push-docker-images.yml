@@ -1,0 +1,24 @@
+steps:
+
+- task: DockerInstaller@0
+  displayName: Docker Installer
+  inputs:
+    dockerVersion: 17.09.0-ce
+    releaseType: stable
+
+- task: Docker@1
+  displayName: 'Build image $(repository):$(Build.BuildNumber)'
+  inputs:
+    imageName: '$(ACR.FullName)/$(repository):$(Build.BuildNumber)'
+    command: build
+    dockerFile: $(repositoryExact)/Dockerfile
+    useDefaultContext: false
+
+- task: Docker@1
+  displayName: 'Push image $(repository):$(Build.BuildNumber)'
+  condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
+  inputs:
+    azureSubscriptionEndpoint: $(azureSubscription)
+    azureContainerRegistry: $(ACR.FullName)
+    imageName: '$(repository):$(Build.BuildNumber)'
+    command: push

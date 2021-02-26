@@ -17,31 +17,30 @@ resources:
 #**** substitute below variables with your own ****
 #**************************************************
 variables:
-  Azure.ServiceConnectionId: myServiceConnectionId
-  Azure.ResourceGroupName: myResourceGroupName
-  ACR.Name: myACRName
-  AKS.ClusterName: myAKSClusterName
+  azureSubscription: myServiceConnectionId
+  azureResourceGroup: myResourceGroupName
+  acrName: myACRName
+  kubernetesCluster: myAKSClusterName
   AKS.Deploy: false                     #on/off switch
-  ACR.FullName: $(ACR.Name).azurecr.io  #only change ACR.FullName if your ACR is non-Azure
+  registry: $(acrName).azurecr.io       #only change registry if your ACR is non-Azure
   ACR.Deploy: false                     #on/off switch
 
 stages:
-- stage: Build
-  displayName: 'Build & push Docker images and Helm charts to ACR'
+- stage: build
+  displayName: Build & push Docker images and Helm charts to ACR
   jobs:
-  - job: Build
-    displayName: Build job
+  - job: build
     strategy:
       matrix:
         MyApp:
-          imageRepository: myapp
-          imageRepositoryExact: MyApp
+          repository: myapp
+          repositoryExact: MyApp
         MyWeb:
-          imageRepository: myweb
-          imageRepositoryExact: MyWeb
+          repository: myweb
+          repositoryExact: MyWeb
         MyWebAPI:
-          imageRepository: mywebapi
-          imageRepositoryExact: MyWebAPI
+          repository: mywebapi
+          repositoryExact: MyWebAPI
         #add additional builds in here...
     pool:
       vmImage: ubuntu-latest
@@ -49,27 +48,26 @@ stages:
     - template: steps-build-and-push-docker-images.yml
     - template: steps-build-and-push-helm-charts.yml
         
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
+- stage: deploy
+  dependsOn: build
   jobs:
-  - job: Deploy
+  - job: deploy
     displayName: Deploy to AKS via Helm Charts stored in ACR
     condition: and(succeeded(), eq(variables['AKS.Deploy'], 'true'))
     strategy:
       matrix:
         MyApp:
-          imageRepository: myapp
-          imageRepositoryExact: MyApp
+          repository: myapp
+          repositoryExact: MyApp
         MyWeb:
-          imageRepository: myweb
-          imageRepositoryExact: MyWeb
+          repository: myweb
+          repositoryExact: MyWeb
         MyWebAPI:
-          imageRepository: mywebapi
-          imageRepositoryExact: MyWebAPI
+          repository: mywebapi
+          repositoryExact: MyWebAPI
         #add additional deployments in here...
     pool:
       vmImage: ubuntu-latest
     steps:
-    - script: echo $(imageRepository) deployment disabled
+    - script: echo $(repository) deployment disabled
     #- template: steps-deploy-helm-charts.yml    

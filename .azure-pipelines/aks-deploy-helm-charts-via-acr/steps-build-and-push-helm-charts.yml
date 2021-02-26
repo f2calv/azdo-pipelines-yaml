@@ -9,9 +9,9 @@ steps:
   displayName: helm init
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
-    azureSubscription: $(Azure.ServiceConnectionId)
-    azureResourceGroup: $(Azure.ResourceGroupName)
-    kubernetesCluster: $(AKS.ClusterName)
+    azureSubscription: $(azureSubscription)
+    azureResourceGroup: $(azureResourceGroup)
+    kubernetesCluster: $(kubernetesCluster)
     command: init
     arguments: --client-only
 
@@ -19,11 +19,11 @@ steps:
   displayName: helm package
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
-    azureSubscription: $(Azure.ServiceConnectionId)
-    azureResourceGroup: $(Azure.ResourceGroupName)
-    kubernetesCluster: $(AKS.ClusterName)
+    azureSubscription: $(azureSubscription)
+    azureResourceGroup: $(azureResourceGroup)
+    kubernetesCluster: $(kubernetesCluster)
     command: package
-    chartPath: $(imageRepositoryExact)/charts/$(imageRepository)
+    chartPath: $(repositoryExact)/charts/$(repository)
     chartVersion: $(Build.BuildId)
     destination: $(Build.ArtifactStagingDirectory)
 
@@ -31,6 +31,6 @@ steps:
   displayName: Push helm chart
   condition: and(succeeded(), eq(variables['ACR.Deploy'], 'true'))
   inputs:
-    azureSubscription: $(Azure.ServiceConnectionId)
+    azureSubscription: $(azureSubscription)
     scriptLocation: inlineScript
-    inlineScript: az acr helm push -n $(ACR.Name) $(Build.ArtifactStagingDirectory)/$(imageRepository)-$(Build.BuildId).tgz
+    inlineScript: az acr helm push -n $(acrName) $(Build.ArtifactStagingDirectory)/$(repository)-$(Build.BuildId).tgz
