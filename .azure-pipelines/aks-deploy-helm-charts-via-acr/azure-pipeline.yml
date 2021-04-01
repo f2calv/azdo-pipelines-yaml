@@ -8,7 +8,7 @@
 # 5) publish image+helm chart to Azure Kubernetes Service (AKS).
 
 trigger:
-- master
+- main
 
 resources:
 - repo: self
