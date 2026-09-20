@@ -1,5 +1,10 @@
 
 # Azure DevOps (AzDO)
+
+> [!IMPORTANT]
+> This repository has been retired and is no longer maintained. It is retained for historical
+> reference and should not be treated as supported or secure production guidance.
+
 ### Deploy Helm Charts via Azure Container Registry (ACR) to Azure Kubernetes Service (AKS)
 
 The repository is comprised of three test .NET Core 2.2 applications - each application is 'vanilla', i.e. simply a template to use for the build process;
